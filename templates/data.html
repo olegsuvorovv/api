@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+
+{% block container %}
+<ul>
+    {% for key,value in inf.items() %}
+    <li> {{ key }} and {{value}}</li>
+
+    {% endfor %}
+</ul>
+{% endblock %}
