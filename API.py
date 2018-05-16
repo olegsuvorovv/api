@@ -11,8 +11,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///C:\\Users\\User\\PycharmProje
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_tag = db.Column(db.String(50))
@@ -31,14 +29,20 @@ class User(db.Model):
 
 class UserApi(Resource):
     def get(self, telegram_id):
+      try:
         user = User.query.filter_by(telegram_id=telegram_id).first()
         respons = {'id': user.id,
                    'user_tag': user.user_tag,
                    'telegram_id': user.telegram_id,
                    'locations': user.locations}
         return json.dumps(respons)
+      except Exception as error:
+            response = {'is_error': 1,
+                        'error_log': str(error)}
+        return json.dumps(response)
 
     def post(self):
+      try:
         user_tag = request.form['user_tag']
         telegram_id = request.form['telegram_id']
         locations = request.form['locations']
@@ -46,8 +50,14 @@ class UserApi(Resource):
         db.session.add(user)
         db.session.commit()
         return json.dumps({'status': 'ok'})
+      except Exception as error:
+            response = {'is_error': 1,
+                        'error_log': str(error)}
+        return json.dumps(response)
+
 
     def put(self):
+      try:
         user_id = 1
         user = User.query.filter_by(id = user_id).first()
         user_tag = request.form['user_tag']
@@ -58,6 +68,10 @@ class UserApi(Resource):
         db.session.add(user)
         db.session.commit()
         return json.dumps({'status': 'ok'})
+       except Exception as error:
+            response = {'is_error': 1,
+                        'error_log': str(error)}
+        return json.dumps(response)
 
 class ManagerDBApi(Resource):
 
@@ -68,29 +82,12 @@ class ManagerDBApi(Resource):
 api.add_resource(UserApi, '/person')
 api.add_resource(ManagerDBApi, '/create_db')
 
-# @app.route('/create_db')
-# def create_db():
-#     db.create_all()
-#     return 'ok.DB has been created.'
-#
-# @app.route('/add/person/<name>')
-# def add_person(name):
-#     person = Person(name = name)
-#     db.session.add(person)
-#     db.session.commit()
-#
-#     return 'ok.DB has been created a person.'
-#
-#
-# @app.route('/add/address/<address_owner_email>/<person>')
-# def add_address(address_owner_email,person):
-#     owner = Person.query.filter_by(name = person).first()
-#     person = Address(email = address_owner_email , person_id = owner.id)
-#     db.session.add(person)
-#     db.session.commit()
-#
-#     return 'ok.DB has been created a person.'
-#
-#
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=2228)
